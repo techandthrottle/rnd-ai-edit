@@ -76,28 +76,56 @@ Send a `POST` request to the following endpoint to start a video processing job:
 
 ### Sample Request Body
 
-The request body must be a JSON object containing the `video_url` and an optional `recipe` object. If no recipe is provided, the default recipe will be used.
+The request body must be a JSON object containing the `video_url` and an optional `recipe` object. If no recipe is provided, a default one will be used which enables most features.
 
+**Minimal Request:**
+The only required field is `video_url`.
 ```json
+{
+  "video_url": "http://example.com/my_video.mp4"
+}
+```
+
+**Full Recipe Example:**
+The `recipe` object allows you to customize the editing process. All parameters are optional.
+
+```jsonc
 {
   "video_url": "http://example.com/my_video.mp4",
   "recipe": {
-    "apply_noise_reduction": true,
-    "transcribe": true,
+    // --- Core Features ---
+    "apply_noise_reduction": true, // Reduces background noise.
+    "transcribe": true,            // Generates a transcript. Required for most features below.
+
+    // --- Smart Trimming ---
+    // These features identify segments to remove.
     "detect_silence": true,
-    "classify_content": true,
-    "classify_silence": true,
     "detect_filler_words": true,
-    "cut_video": true,
+    "detect_retakes": true,
+
+    // These flags control whether the identified segments are actually removed.
     "remove_silence": true,
     "remove_filler_words": true,
+    "remove_retakes": true,
+
+    // --- Content Analysis ---
+    "classify_content": true,      // Classifies video as "Podcast" or "Short-form" and identifies topics.
+    "suggest_b_roll": true,        // Suggests B-roll shots based on the transcript.
+
+    // --- Output Options ---
+    // Choose one of the following output methods:
+    "cut_video": true,             // Physically cuts the video file based on the trimming rules.
+    "export_to_premiere": false,   // Generates a Premiere Pro compatible XML file for non-destructive editing.
+
+    // --- Captioning ---
+    // Only used if "transcribe" is true.
     "burn_captions": true,
-    "ass_style": {
-      "position": "Bottom",
+    "ass_style": { // Only used if "burn_captions" is true.
+      "position": "Bottom",        // "Top", "Middle", or "Bottom"
       "words_per_line": 10,
       "Fontname": "Arial",
       "Fontsize": "72",
-      "PrimaryColour": "&H00FFFFFF",
+      "PrimaryColour": "&H00FFFFFF", // White
       "Outline": 3,
       "Shadow": 2
     }

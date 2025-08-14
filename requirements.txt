@@ -1,0 +1,4 @@
+Flask
+srt
+google-generativeai
+python-dotenv
